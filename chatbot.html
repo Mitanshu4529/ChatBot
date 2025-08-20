@@ -1,0 +1,261 @@
+<!-- template code -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ChatBot</title>
+    <style>
+      body{
+        font-family: Arial, Helvetica, sans-serif;
+        margin-top: 0px;
+        margin-bottom: 0px;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .send-button{
+        background-color: rgb(25,135,84);
+        color: white;
+        padding: 12px 20px;
+        margin-left: 10px;
+        border: none;
+        border-radius: 10px;
+        font-size: 15px;
+        cursor: pointer;
+      }
+      .chat-input{
+        padding: 12px 15px ;
+        border-radius: 10px;
+        border-width: 2px;
+        font-size: 15px;
+        flex-grow: 1;
+
+      }
+      .chat-input-container{
+        display: flex;
+        margin-bottom: 60px;
+      }
+      .app-container{
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        height: 100vh;
+      }
+      .chat-message-user{
+        display: flex;
+        justify-content: end;
+        align-items: start;
+      }
+      .chat-message-robot{
+        display: flex;
+        align-items: start;
+      }
+      .chat-message-text{
+        background-color: rgb(238,238,238);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 20px;
+        max-width: 300px;
+      }
+      .chat-message-profile{
+        width: 45px;
+      }
+      .chat-messages-container{
+        flex-grow: 1;
+        margin-top: 20px;
+        overflow: scroll;
+        scrollbar-width: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="js-container"></div>
+    <script src="https://unpkg.com/supersimpledev/react.js"></script><!--these are all external libraries--> 
+    <script src="https://unpkg.com/supersimpledev/chatbot.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
+    <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+    <script type="text/babel">
+      function ChatInput({chatMessages,setChatMessages}){  //each component name must start with a capital letter this is called pascalcase 
+        const[inputText,setInputText]=React.useState('');  //react.usestate is a hook. hook lets us insert react features into our component.every hook starts with a use keyword like useState,useEffect,useRef
+        //useeffect lets us run some code after the component is created or updated
+        //it has been set to empty string as originally it is empty in the input box
+        
+        function saveInputText(event){
+          setInputText(event.target.value)  
+          //this gives us the element that we're typing in. s basically what happens is that react will give us the access to this below <input> automatically using event.target
+          //now we want to store this data from the input therefore we will use state.state is useed to save data that changes over time
+        }
+
+        function sendMessage(){
+          /*chatMessages.push({  //in react we should not update the data directly like we did here by just pushing we should always use a state function
+            message:'test',
+            sender:'user',
+            id:crypto.randomUUID()
+          });
+          console.log(chatMessages);
+          what we should have done is this and and and in reacct we shuld not just modify the data directly we should first copy the data and then modify the data*/
+
+          const newChatMessages=[
+            ...chatMessages,
+            {
+              message:inputText,
+              sender:'user',
+              id:crypto.randomUUID()
+            }
+          ]
+
+          setChatMessages([//by putting [] we create new array and by the spread operator that is ...xyz will take the values from the array and copies them in the new array 
+            ...chatMessages,
+            {
+              message:inputText,
+              sender:'user',
+              id:crypto.randomUUID()
+            }
+          ]);
+          const response=Chatbot.getResponse(inputText);
+          setChatMessages([//by putting [] we create new array and by the spread operator that is ...xyz will take the values from the array and copies them in the new array 
+            ...newChatMessages,
+            //...chatMessages, here i cant use chatMessages because that wont store our message in the input box so we need to store it in a variable
+            {
+              message:response,
+              sender:'robot',
+              id:crypto.randomUUID()
+            }
+          ]);
+          setInputText('');  //but here what i should know is that state dosent update immediately it updates after the code is finished
+        }
+
+        return (// as a fragment we cant style it with css so we need a div
+          <div className="chat-input-container" > 
+            <input 
+              placeholder="ENTER YOUR MESSAGE FOR CHATBOT" 
+              size="35" 
+              onChange={saveInputText}    //this will run a function when we change the text inside an <input>
+              value={inputText}  //changes the text inside this <input>.this is known as controlled input
+              className="chat-input"
+              />
+            <button
+              onClick={sendMessage}
+              className="send-button" //react is basically a javascript code and javascript already has a feature called class so here we use className. class is a reseerved word
+            >Send</button>
+          </div>
+        );//if i dont want to use an extra div which will make my website look nicer so i have a way in react by creating a fragment which is just like a closing and a opening bracket  <></>  as above
+      }
+      function ChatMessage({message,sender}){//attributes are saved in props=properties, even shorter shortcut in javascript for destructuring instead of function ChatMessage(props)
+        //const message=props.message;
+        //const sender=props.sender;
+        //const {message,sender}=props; //this is called destructuring which means that i am storing props in a variable name messsage 
+        /*if(sender==="robot"){
+          return(
+            <div>
+              <img src="robot.png" width="50"/>
+              {message}
+            </div>
+          );
+        }*/
+        //the shortcut for that long if statement is like {if x is true then y is the answer} so it goes like {x==="k"&&y==="choco"} mtlb agr x=k then y ko bana do choco
+        return (
+          <div className={sender==='user'?'chat-message-user':'chat-message-robot'}>
+            {sender==="robot"&&(
+              <img src="robot.png"  
+              className="chat-message-profile"
+              />
+            )}
+            <div className="chat-message-text">
+              {message}
+            </div>
+            {sender==="user"&&
+              (<img src="user.png" 
+              className="chat-message-profile"
+              />
+            )} 
+          </div>
+        );// we used div here because we want it to appear below the text box so it will take a entire line for itself, && is called a guard statement
+      }
+      function ChatMessages({chatMessages}){
+
+        /*const chatMessages=[{  
+          message:"Hello Chatbot",
+          sender:"user",
+          id:"id1"
+        },{
+          message:"Hello! How Can I Help You?",
+          sender:"robot",
+          id:'id2'
+        },{
+          message:"Can You Get Me Todays Date",
+          sender:"user",
+          id:"id3"
+        },{
+          message:"Today is July 18",
+          sender:"robot",
+          id:"id4"
+        }]; */
+
+        // const chatMessage=array[0];//this is the current data
+        // const setChatMessages=array[1];//second value of this array is a function that updates data 
+        //const[chatMessages,setChatMessages]=array; //destructuring an array better than above format and even better format than this is  just directly writing it above 
+        
+        const chatMessagesRef=React.useRef(null);//automatically saves an html element from the components.container with special react features
+        React.useEffect(()=>{  //isse ye hoga ki jaise hi message kru to screen automatically latest message tak chali jayegi if woh screen k bahar jaa rha hoga
+          const containerElement=chatMessagesRef.current;
+          if(containerElement){
+            containerElement.scrollTop=containerElement.scrollHeight;
+          }
+        },[chatMessages])//this array controls when useEffect runs and if it is empty then it runs only once
+
+        return ( //keep this all in a fragment so that it remains together to niche <> dala hai
+          <div className="chat-messages-container"
+          ref={chatMessagesRef}> 
+            {chatMessages.map((chatMessage)=>{  //chatMessage is he re passed as a parameter //arrow function: works same as normal function but is shorter, .map() goes through each value and runs the function and converts it to a new value
+              return(//onClick is the event and the sendMessage is the event-handler the work ofevent handler is to run a function when we interact with the website and the event prop always starts with on and is camelcase:i.e., first word is lowercase and then all begin with capital that's y onClick C is capital
+                <ChatMessage
+                  message={chatMessage.message}  //curly brackets k ander kuch bhi jayega woh as a result save hoga inside the prop
+                  sender={chatMessage.sender}
+                  key={chatMessage.id}
+                />
+              );
+            })}
+          </div>
+        );
+      }
+      function App(){
+        const [chatMessages,setChatMessages]=React.useState([{  //now we will use state so that we can put the data directly into html so that if i update the data it will update the html.
+        //now here i need to use state uplifting which means that it is like a shared state between multiple components
+          message:"Hello Chatbot",
+          sender:"user",
+          id:"id1"
+        },{
+          message:"Hello! How Can I Help You?",
+          sender:"robot",
+          id:'id2'
+        },{
+          message:"Can You Get Me Todays Date",
+          sender:"user",
+          id:"id3"
+        },{
+          message:"Today is July 18",
+          sender:"robot",
+          id:"id4"
+        }]);  
+        return(//we cant style a fragment with css so we need a div
+          <div className="app-container">
+            <ChatMessages  //this should be written like ChatMessagesComponent
+              chatMessages={chatMessages}  //chatMessagesprop={chatMessagesArray} but we dont do that because in react generally we follow this naming convention that goes like giving same names which might get confusing for first but later u get used to it
+            />
+            <ChatInput
+              chatMessages={chatMessages}
+              setChatMessages={setChatMessages}
+            />
+          </div>
+        );
+      }
+      //instead of using a variable we should use components
+      //i can also write like {ChatInput()} and the way that i have written is self closing and i gave a custom attribute to ChatMessage   
+      const container=document.querySelector('.js-container');
+      ReactDOM.createRoot(container).render(<App/>);
+    </script>
+  </body>
+</html>

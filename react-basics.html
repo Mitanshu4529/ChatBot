@@ -1,0 +1,30 @@
+<!-- template code -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>React Sikhra</title>
+  </head>
+  <body>
+    <!-- react is a external library that helps us create website easier -->
+    <div class="js-container"></div>
+    <script src="https://unpkg.com/supersimpledev/react.js"></script><!--react me shared features hote hai that can be used for both mobiles and websites meanwhile-->
+    <script src="https://unpkg.com/supersimpledev/react-dom.js"></script><!--reactdom have the things specifically for websites--> <!--DOM-document object model-->
+    <!-- if using react to create websites we need to load react and reactdom -->
+    <!-- if using react to create mobile apps then we need react and react native -->
+    <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+    <script type="text/babel">//babel is a javascript compiler it basically translates other languages to javascript now we need this because when we use react we dont use simple javascript we use jsx tthat is javasciptxml joki same as javascript but we can write html directly in our javascript code for eg:
+    const button=<button>hello</button>  //ab isme ye panga hai ki our web browser dosent understand jsx so we need babel to translate it to javascript and then the browser gets it
+      const container = document.querySelector('.js-container');
+      //ReactDOM.createRoot(container).render('MITANSHU SHAILESHBHAI FINAVIYA.'); //.render se display hota hai inside the container 
+      const div=(
+        <div>
+          <button>I'M DONE</button>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde quos repellat dolorum inventore ea ipsa eos ducimus quis accusamus, numquam possimus, nobis, earum deleniti doloribus quasi nesciunt delectus architecto omnis.{4*9+5-2}</p>
+        </div>
+      );
+      //ReactDOM.createRoot(container).render(button);
+      //if i want them together then i have to store them together in a sigle container that is in a single div 
+      ReactDOM.createRoot(container).render(div);
+    </script>
+  </body>
+</html>
